@@ -5,7 +5,7 @@ include("tools.jl")
 
 function myError(parameters, X, ptsPCA, nPCA)
     b = parameters[7:end]
-    Y = reshape(ptsPCA * b, 20, 2)'
+    Y = reshape(ptsPCA * b, 2, 20)
 
     X_approx = applyTransform(Y, parameters[1:6]) # 2×20
     
@@ -14,10 +14,10 @@ function myError(parameters, X, ptsPCA, nPCA)
 end
 
 function main()
-    # imTarget = imgLoad("faces/me.jpg")
-    # ptsTarget= readdlm("csv/me.csv", Float64)
+    imTarget = imgLoad("faces/me.jpg")
+    ptsTarget= readdlm("csv/me.csv", Float64)
 
-    imTarget, ptsTarget = opendist(603)
+    # imTarget, ptsTarget = opendist(187)
     # read pts and create matrix
     mat_pts = createMatrix()
 
@@ -25,8 +25,13 @@ function main()
     ptsPCA = myPCA(mat_pts)
     nPCA = size(ptsPCA, 2)
 
+    subplot(1,2,1)
+    plotPCA(ptsPCA)
+ 
+
     X = ptsTarget'
 
+    subplot(1,2,2)
     plotdist(imTarget, X, "Target distribution")
 
     η   = 5.0
@@ -46,7 +51,7 @@ function main()
                                                 correctSol=false)
         
         b = approxParms[7:end]
-        Y = reshape(ptsPCA * b, 20, 2)'
+        Y = reshape(ptsPCA * b, 2, 20)
         
         X_approx = applyTransform(Y, approxParms)
         plotdist(imTarget, X_approx, "approx distribution", :r)

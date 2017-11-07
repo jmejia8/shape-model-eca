@@ -3,7 +3,8 @@ include("/home/jesus/develop/repos/image-analysis/tools.jl")
 
 function myPCA(x)
     M = PCA
-    pca_ = fit(PCA, x)
+    # pca_ = fit(PCA, x; pratio=0.9)
+    pca_ = fit(PCA, x; maxoutdim=4)
 
     p = principalvars(pca_) / tvar(pca_)
     println("PC explanation: ", p)
@@ -18,7 +19,17 @@ function createMatrix(numFaces = 1521, npts = 20)
 
     for i = 1:numFaces
         # 2×20
+
         pts = openpts(i-1)
+        # println(size(pts,1,2))
+
+        ptsMean = mean(pts,2)
+        # println(size(ptsMean,1,2))
+
+        ptsMean = repmat(ptsMean, 1, npts)
+        # println(size(ptsMean,1,2))
+        # error("perro")
+        pts -= ptsMean #repmat(ptsMean, 1, npts)
         myMatrix[:,i] = reshape(pts, D)
     end
 
@@ -66,4 +77,15 @@ function applyTransform(x, parameters)
 
     cols = size(x, 2)
     return A * x + repmat(t, 1, cols)
+end
+
+function plotPCA(ptsPCA)
+    r, c = size(ptsPCA)
+
+    for i = 1:c
+        # i= 2
+        pts = reshape(ptsPCA[:,i],20, 2)'
+        plot(pts[1,:], pts[2,:], marker=:o, lw=0,markersize=4)
+        # break
+    end
 end
